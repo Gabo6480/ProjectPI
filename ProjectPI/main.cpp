@@ -97,6 +97,9 @@ std::string SecToMinAndSecString(float sec) {
 
 
 void replaceCurrentFrame(cv::Mat frame) {
+
+	cv::resize(frame, frame, cv::Size(668, 422), 0, 0, cv::INTER_AREA);
+
 	cv::cvtColor(frame, frame, cv::COLOR_BGR2BGRA);
 
 	HBITMAP hB = CreateBitmap(frame.cols, frame.rows, 1, 32, frame.data);
@@ -258,6 +261,9 @@ LRESULT CALLBACK MainProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
 		if (LOWORD(wParam) == TB_THUMBTRACK && pauseVideoCapture) {
 			int tick = SendMessage(hProgressSlider, TBM_GETPOS, 0, 0);
 			videoCapture.set(cv::CAP_PROP_POS_FRAMES, tick);
+			cv::Mat frame;
+			if(videoCapture.read(frame))
+				replaceCurrentFrame(frame);
 		}
 		else
 		{
