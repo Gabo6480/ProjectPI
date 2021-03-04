@@ -26,7 +26,7 @@ HWND hSourcesCB;
 
 cv::VideoCapture videoCapture;
 cv::Mat currFrame;
-int cvFPS = 0;
+int cvFPS = 60;
 float videoLength = 0;
 std::string videoLengthString = "";
 
@@ -133,7 +133,8 @@ void videoCaptureThread() {
 						SendMessage(hProgressSlider, TBM_SETPOS, true, currFrameNum);
 						SetWindowText(hTimeText, (SecToMinAndSecString(currFrameNum / cvFPS) + " / " + videoLengthString).c_str());
 					}
-					std::this_thread::sleep_for(1s / cvFPS);
+					if(cvFPS != 0)
+						std::this_thread::sleep_for(1s / cvFPS);
 				}
 		}
 	}
@@ -187,6 +188,7 @@ void EnableVideoControls(bool enable, int frameCount) {
 	if (!enable) {
 		videoLength = 0;
 		videoLengthString = "";
+		cvFPS = 60;
 		SetWindowText(hTimeText, "0:00 / 0:00");
 	}
 }
@@ -297,7 +299,7 @@ LRESULT CALLBACK CamSelectProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam
 		}
 
 		for (auto const& device : devices) {
-			SendMessage(hSourcesCB, CB_ADDSTRING, device.second.id, (LPARAM)device.second.deviceName.c_str());
+			SendMessage(hSourcesCB, CB_ADDSTRING, 0, (LPARAM)device.second.deviceName.c_str());
 		}
 	}
 		break;
