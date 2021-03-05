@@ -21,6 +21,7 @@ HWND hPicDisplay;
 HWND hPlayBtn;
 HWND hProgressSlider;
 HWND hTimeText;
+HWND hFPSText;
 
 HWND hSourcesCB;
 
@@ -96,6 +97,7 @@ std::string SecToMinAndSecString(float sec) {
 }
 
 
+int frameCount = 0;
 void replaceCurrentFrame(cv::Mat frame) {
 
 	cv::resize(frame, frame, cv::Size(668, 422), 0, 0, cv::INTER_AREA);
@@ -107,7 +109,9 @@ void replaceCurrentFrame(cv::Mat frame) {
 	DeleteObject(hB);
 
 	currFrame = frame;
+	frameCount++;
 }
+
 void videoCaptureRelease() {
 	pauseVideoCapture = true;
 	EnableVideoControls(false);
@@ -136,8 +140,6 @@ void videoCaptureThread() {
 						SendMessage(hProgressSlider, TBM_SETPOS, true, currFrameNum);
 						SetWindowText(hTimeText, (SecToMinAndSecString(currFrameNum / cvFPS) + " / " + videoLengthString).c_str());
 					}
-					if(cvFPS != 0)
-						std::this_thread::sleep_for(1s / cvFPS);
 				}
 		}
 	}
@@ -201,6 +203,13 @@ void PauseVideoCapture(bool pause) {
 	SetWindowText(hPlayBtn, pauseVideoCapture ? "Play" : "Pause");
 }
 
+void CALLBACK Timerproc(HWND hDlg, UINT msg, UINT_PTR timer, DWORD ticks)
+{
+	std::string fps = "FPS: " + std::to_string(frameCount);
+	SetWindowText(hFPSText, fps.c_str());
+	frameCount = 0;
+}
+
 LRESULT CALLBACK MainProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
 	
 	switch (msg)
@@ -211,8 +220,10 @@ LRESULT CALLBACK MainProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
 		hPlayBtn = GetDlgItem(hDlg, IDC_BTN_PLAY);
 		hProgressSlider = GetDlgItem(hDlg, IDC_SLIDER_PROGRESS);
 		hTimeText = GetDlgItem(hDlg, IDC_TEXT_TIMER);
+		hFPSText = GetDlgItem(hDlg, IDC_TEXT_FPS);
 
 		EnableVideoControls(false);
+		SetTimer(hDlg, 6480, 1000, Timerproc);
 	}
 	break;
 	case WM_COMMAND:
@@ -273,6 +284,8 @@ LRESULT CALLBACK MainProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_DESTROY:
 	case WM_CLOSE:
+		KillTimer(hDlg, 6480);
+		videoCaptureRelease();
 		PostQuitMessage(0);
 		break;
 	default:
