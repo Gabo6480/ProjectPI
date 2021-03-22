@@ -11,9 +11,12 @@
 #define IDC_BTN_PLAY                    1004
 #define IDC_SLIDER_PROGRESS             1005
 #define IDC_TEXT_TIMER                  1007
-#define IDC_LIST_FILTERS                1008
-#define IDC_TXT_FPS                     1009
+#define IDC_LIST_ACTIVE_FILTERS         1008
 #define IDC_TEXT_FPS                    1009
+#define IDC_LIST_FILTERS                1010
+#define IDC_BTN_REMOVE                  1011
+#define IDC_BTN_REMOVE2                 1012
+#define IDC_BTN_ADD                     1012
 #define ID_FUENTE_WEBCAM                40001
 #define ID_FUENTE_ARCHIVODEVIDEO        40002
 #define ID_FUENTE_IM40003               40003
@@ -26,7 +29,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        106
 #define _APS_NEXT_COMMAND_VALUE         40006
-#define _APS_NEXT_CONTROL_VALUE         1010
+#define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
