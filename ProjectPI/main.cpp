@@ -420,7 +420,7 @@ LRESULT CALLBACK MainProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
 					cv::Size S = cv::Size((int)videoCapture.get(cv::CAP_PROP_FRAME_WIDTH),    //Acquire input size
 						(int)videoCapture.get(cv::CAP_PROP_FRAME_HEIGHT));
 					cv::VideoWriter videoWriter(buff, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-						20, S, true);
+						30, S, true);
 
 					for (auto& frame : storedFrames) {
 
