@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Archivos de encabezado\Filters">
+      <UniqueIdentifier>{d1faf158-1d88-4017-897f-a732224bc049}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Filters">
+      <UniqueIdentifier>{d03bd30a-8640-4ecd-b1ee-aeb915f23538}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -21,12 +27,150 @@
     <ClCompile Include="DeviceEnumerator.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="FilterMedian.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterGaussian.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterLaplacian.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterAverage.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterWeightedAverage.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterAverageSubstraction.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="IFilter.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterSobel.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterDirectionalNorth.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterDirectionalEast.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterMinusLaplacian.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterGrayscale.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterThreshold.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterSepia.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterSimpleEqualization.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterUniformEqualization.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterExponentialEqualization.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterPowerEqualization.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterNegative.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterVerticalMirror.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterFourths.cpp">
+      <Filter>Archivos de origen\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="ISetValue.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="ISetTwoValues.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="DeviceEnumerator.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="IFilter.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterMedian.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterGaussian.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterLaplacian.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterAverage.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterWeightedAverage.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterAverageSubstraction.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterSobel.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterDirectionalNorth.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterDirectionalEast.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterMinusLaplacian.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterGrayscale.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterThreshold.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterSepia.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterSimpleEqualization.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterUniformEqualization.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterExponentialEqualization.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterPowerEqualization.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterNegative.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterVerticalMirror.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterFourths.h">
+      <Filter>Archivos de encabezado\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="ISetValue.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="ISetTwoValues.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

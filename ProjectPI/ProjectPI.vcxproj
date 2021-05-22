@@ -73,6 +73,10 @@
     <IncludePath>D:\gabri\Downloads\opencv\build\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\gabri\Downloads\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>D:\gabri\Downloads\opencv\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\gabri\Downloads\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -94,6 +98,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>opencv_world451d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>opencv_world451d.lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -119,19 +124,68 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\gabri\Downloads\opencv\build\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>D:\gabri\Downloads\opencv\build\x64\vc15\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_world451.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DeviceEnumerator.cpp" />
+    <ClCompile Include="FilterAverage.cpp" />
+    <ClCompile Include="FilterAverageSubstraction.cpp" />
+    <ClCompile Include="FilterDirectionalEast.cpp" />
+    <ClCompile Include="FilterDirectionalNorth.cpp" />
+    <ClCompile Include="FilterExponentialEqualization.cpp" />
+    <ClCompile Include="FilterFourths.cpp" />
+    <ClCompile Include="FilterGaussian.cpp" />
+    <ClCompile Include="FilterGrayscale.cpp" />
+    <ClCompile Include="FilterLaplacian.cpp" />
+    <ClCompile Include="FilterMedian.cpp" />
+    <ClCompile Include="FilterMinusLaplacian.cpp" />
+    <ClCompile Include="FilterNegative.cpp" />
+    <ClCompile Include="FilterPowerEqualization.cpp" />
+    <ClCompile Include="FilterSepia.cpp" />
+    <ClCompile Include="FilterSimpleEqualization.cpp" />
+    <ClCompile Include="FilterSobel.cpp" />
+    <ClCompile Include="FilterThreshold.cpp" />
+    <ClCompile Include="FilterUniformEqualization.cpp" />
+    <ClCompile Include="FilterVerticalMirror.cpp" />
+    <ClCompile Include="FilterWeightedAverage.cpp" />
+    <ClCompile Include="IFilter.cpp" />
+    <ClCompile Include="ISetTwoValues.cpp" />
+    <ClCompile Include="ISetValue.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeviceEnumerator.h" />
+    <ClInclude Include="FilterAverage.h" />
+    <ClInclude Include="FilterAverageSubstraction.h" />
+    <ClInclude Include="FilterDirectionalEast.h" />
+    <ClInclude Include="FilterDirectionalNorth.h" />
+    <ClInclude Include="FilterExponentialEqualization.h" />
+    <ClInclude Include="FilterFourths.h" />
+    <ClInclude Include="FilterGaussian.h" />
+    <ClInclude Include="FilterGrayscale.h" />
+    <ClInclude Include="FilterLaplacian.h" />
+    <ClInclude Include="FilterMedian.h" />
+    <ClInclude Include="FilterMinusLaplacian.h" />
+    <ClInclude Include="FilterNegative.h" />
+    <ClInclude Include="FilterPowerEqualization.h" />
+    <ClInclude Include="FilterSepia.h" />
+    <ClInclude Include="FilterSimpleEqualization.h" />
+    <ClInclude Include="FilterSobel.h" />
+    <ClInclude Include="FilterThreshold.h" />
+    <ClInclude Include="FilterUniformEqualization.h" />
+    <ClInclude Include="FilterVerticalMirror.h" />
+    <ClInclude Include="FilterWeightedAverage.h" />
+    <ClInclude Include="IFilter.h" />
+    <ClInclude Include="ISetTwoValues.h" />
+    <ClInclude Include="ISetValue.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
