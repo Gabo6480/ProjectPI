@@ -7,7 +7,13 @@
 #include <cmath>
 #include "DeviceEnumerator.h"
 #include "opencv2/opencv.hpp"
+#include <opencv2\core\core.hpp>
+#include <opencv2\imgproc\imgproc.hpp>
+#include <opencv2\highgui\highgui.hpp>
 #include "resource.h"
+
+#include "baseapi.h"
+#include "allheaders.h"
 
 HINSTANCE hInst;
 int appShow;
@@ -23,16 +29,35 @@ HWND hProgressSlider;
 HWND hTimeText;
 HWND hFPSText;
 
+HWND hResultEdit;
+HWND hConfidenceText;
+HWND hOffsetText;
+HWND hSlopeText;
+
+HWND hThreshEdit;
+HWND hErodeEdit;
+HWND hInvertCheck;
+HWND hDilateCheck;
+HWND hWaitText;
+
 HWND hSourcesCB;
+
+tesseract::TessBaseAPI api;
 
 cv::VideoCapture videoCapture;
 cv::Mat currFrame;
+cv::Mat preFrame;
 int cvFPS = 60;
 float videoLength = 0;
 std::string videoLengthString = "";
 
 bool pauseVideoCapture = true;
 bool stopVideoCapture = false;
+
+int thres = 30;
+bool negative = true;
+int erodeVal = 3;
+bool dila = true;
 
 //Window procedure declaration
 LRESULT CALLBACK MainProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -98,15 +123,67 @@ std::string SecToMinAndSecString(float sec) {
 
 
 int frameCount = 0;
-void replaceCurrentFrame(cv::Mat frame) {
+void replaceCurrentFrame() {
+	if (preFrame.empty())
+		return;
+
+	ShowWindow(hWaitText, SW_SHOW);
+
+	cv::Mat frame = preFrame.clone();
+
+	int offset;
+	float slope;
+
+
+	cvtColor(frame, frame, cv::COLOR_BGR2GRAY);
+	threshold(frame, frame, thres, 255, cv::THRESH_BINARY);
+	if(negative)
+		bitwise_not(frame, frame);
+	if(erodeVal > 0)
+		erode(frame, frame, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(erodeVal, erodeVal)));
+	if(dila)
+		dilate(frame, frame, cv::Mat());
+	if (negative)
+		bitwise_not(frame, frame);
+
+	cvtColor(frame, frame, cv::COLOR_GRAY2BGRA);
+
+	api.SetImage(frame.data, frame.cols, frame.rows, 4, 4 * frame.cols);
+
+	char* outText = api.GetUTF8Text();
+	int conf = api.MeanTextConf();
+	api.GetTextDirection(&offset, &slope);
+
+	std::string sConf = "Confidence: " + std::to_string(conf) + "%";
+	std::string sOffset = "Offset: " + std::to_string(offset);
+	std::string sSlope = "Slope: " + std::to_string(slope);
+
+	SetWindowText(hConfidenceText, sConf.c_str());
+	SetWindowText(hOffsetText, sOffset.c_str());
+	SetWindowText(hSlopeText, sSlope.c_str());
+	
+	std::string Result = "";
+	for (int i = 0; true; i++) {
+		if (outText[i] == NULL)
+			break;
+
+		if (outText[i] == '\n')
+			Result += '\r';
+
+		Result += outText[i];
+	}
+
+	SetWindowText(hResultEdit, Result.c_str());
+
+	delete[] outText;
 
 	cv::resize(frame, frame, cv::Size(668, 422), 0, 0, cv::INTER_AREA);
-
-	cv::cvtColor(frame, frame, cv::COLOR_BGR2BGRA);
 
 	HBITMAP hB = CreateBitmap(frame.cols, frame.rows, 1, 32, frame.data);
 	SendMessage(hPicDisplay, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hB);
 	DeleteObject(hB);
+
+	ShowWindow(hWaitText, SW_HIDE);
 
 	currFrame = frame;
 	frameCount++;
@@ -130,10 +207,9 @@ void videoCaptureThread() {
 		}
 		else
 		{
-			cv::Mat frame;
 			if (videoCapture.isOpened())
-				if (videoCapture.read(frame)) {
-					replaceCurrentFrame(frame);
+				if (videoCapture.read(preFrame)) {
+					replaceCurrentFrame();
 
 					if (videoLength > 0) {
 						float currFrameNum = abs(videoCapture.get(cv::CAP_PROP_POS_FRAMES));
@@ -160,6 +236,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR cmdLine, i
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));
 
+	api.Init("D:\\Tesseract-files\\VS2015_Tesseract\\tessdata", "eng");
+	api.SetPageSegMode(tesseract::PSM_AUTO);
+
 	//Amount of threads supported by the implementation
 	int x = std::thread::hardware_concurrency();
 
@@ -175,9 +254,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR cmdLine, i
 		}
 	}
 
+
 	stopVideoCapture = true;
 	if(worker.joinable())
 		worker.join();
+
+	api.Clear();
+	api.End();
+
 	return (int)msg.wParam;
 }
 
@@ -222,6 +306,25 @@ LRESULT CALLBACK MainProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
 		hTimeText = GetDlgItem(hDlg, IDC_TEXT_TIMER);
 		hFPSText = GetDlgItem(hDlg, IDC_TEXT_FPS);
 
+		hResultEdit = GetDlgItem(hDlg, IDC_EDITRESULT);
+		hConfidenceText = GetDlgItem(hDlg, IDC_STATICCONFIDENCE);
+		hOffsetText = GetDlgItem(hDlg, IDC_STATICOFFSET);
+		hSlopeText = GetDlgItem(hDlg, IDC_STATICSLOPE);
+
+		hThreshEdit = GetDlgItem(hDlg, IDC_EDITTRESH);
+		hErodeEdit = GetDlgItem(hDlg, IDC_EDITERODE);
+		hInvertCheck = GetDlgItem(hDlg, IDC_CHECKNEGATIVE);
+		hDilateCheck = GetDlgItem(hDlg, IDC_CHECKDILATE);
+
+		hWaitText = GetDlgItem(hDlg, IDC_STATICWAIT);
+		ShowWindow(hWaitText, SW_HIDE);
+
+		SetWindowText(hThreshEdit, std::to_string(thres).c_str());
+		SetWindowText(hErodeEdit, std::to_string(erodeVal).c_str());
+
+		SendMessage(hInvertCheck, BM_SETCHECK, negative ? BST_CHECKED : BST_UNCHECKED, 0);
+		SendMessage(hDilateCheck, BM_SETCHECK, dila ? BST_CHECKED : BST_UNCHECKED, 0);
+
 		EnableVideoControls(false);
 		SetTimer(hDlg, 6480, 1000, Timerproc);
 	}
@@ -257,11 +360,68 @@ LRESULT CALLBACK MainProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
 			char buff[MAX_PATH] = "";
 			if (GetFile(hDlg, 0, buff)) {
 				videoCaptureRelease();
-				cv::Mat frame = cv::imread(buff);
-				replaceCurrentFrame(frame);
+				preFrame = cv::imread(buff);
+				replaceCurrentFrame();
 			}
 		}
 			break;
+		case IDC_EDITTRESH:
+		{
+			int hword = HIWORD(wParam);
+			switch (hword)
+			{
+			case EN_CHANGE:
+			{
+				char buff[20] = { NULL };
+				GetWindowText(hThreshEdit, buff, 20);
+
+				if (buff[0] != NULL) {
+					thres = atoi(buff);
+					replaceCurrentFrame();
+				}
+			}
+			break;
+			default:
+				break;
+			}
+		}
+		break;
+		case IDC_EDITERODE:
+		{
+			int hword = HIWORD(wParam);
+			switch (hword)
+			{
+			case EN_CHANGE:
+			{
+				char buff[20] = { NULL };
+				GetWindowText(hErodeEdit, buff, 20);
+
+				if (buff[0] != NULL) {
+					int val = atoi(buff);
+					erodeVal = val % 2 ? val : val + 1;
+					replaceCurrentFrame();
+				}
+			}
+			break;
+			default:
+				break;
+			}
+		}
+		break;
+		case IDC_CHECKNEGATIVE:
+		{
+			negative = !negative;
+			SendMessage(hInvertCheck, BM_SETCHECK, negative ? BST_CHECKED : BST_UNCHECKED, 0);
+			replaceCurrentFrame();
+		}
+			break;
+		case IDC_CHECKDILATE:
+		{
+			dila = !dila;
+			SendMessage(hDilateCheck, BM_SETCHECK, dila ? BST_CHECKED : BST_UNCHECKED, 0);
+			replaceCurrentFrame();
+		}
+		break;
 		default:
 			break;
 		}
@@ -272,9 +432,8 @@ LRESULT CALLBACK MainProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
 		if (LOWORD(wParam) == TB_THUMBTRACK && pauseVideoCapture) {
 			int tick = SendMessage(hProgressSlider, TBM_GETPOS, 0, 0);
 			videoCapture.set(cv::CAP_PROP_POS_FRAMES, tick);
-			cv::Mat frame;
-			if(videoCapture.read(frame))
-				replaceCurrentFrame(frame);
+			if(videoCapture.read(preFrame))
+				replaceCurrentFrame();
 		}
 		else
 		{

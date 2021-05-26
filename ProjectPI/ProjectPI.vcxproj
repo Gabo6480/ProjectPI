@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\gabri\Downloads\opencv\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\gabri\Downloads\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\gabri\Downloads\opencv\build\include;D:\Tesseract-files\VS2015_Tesseract\liblept;D:\Tesseract-files\VS2015_Tesseract\leptonica\src;D:\Tesseract-files\VS2015_Tesseract\tesseract_4.1\src\api;D:\Tesseract-files\VS2015_Tesseract\tesseract_4.1\src\ccstruct;D:\Tesseract-files\VS2015_Tesseract\tesseract_4.1\src\ccutil;D:\Tesseract-files\VS2015_Tesseract\tesseract_4.1\src\ccmain;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\gabri\Downloads\opencv\build\x64\vc15\lib;D:\Tesseract-files\VS2015_Tesseract\x64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -93,7 +93,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>opencv_world451d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world451d.lib;liblept.lib;libjpeg.lib;openjpeg.lib;libtesseract.lib;giflib.lib;libpng.lib;libtiff.lib;libwebp.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
