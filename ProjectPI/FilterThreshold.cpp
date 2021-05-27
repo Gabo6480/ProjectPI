@@ -17,5 +17,25 @@ float FilterThreshold::getTwoValues(bool isThresh) {
 }
 
 void FilterThreshold::Filter(cv::Mat& src, cv::Mat& dst) {
-	threshold(src, dst, _thresh, _maxval, cv::THRESH_BINARY);
+	const int channels = src.channels();
+
+	int nRows = src.rows;
+	int nCols = src.cols;
+	int nColsHalve = nCols / 2;
+	cv::Mat res = cv::Mat(src.size(), src.type());
+	const uchar* srcData = src.data;
+	uchar* resData = res.data;
+
+	for (int i = 0; i < nRows; i++) {
+		for (int j = 0; j < nCols; j++) {
+			int curr = i * nCols + j;
+
+			for (int k = 0; k < channels; k++) {
+				int idx = k + curr * channels;
+				resData[idx] = srcData[idx] > _thresh ? _maxval : 0;
+			}
+		}
+	}
+
+	dst = res;
 }

@@ -13,22 +13,26 @@ float FilterExponentialEqualization::getValue() {
 }
 
 void FilterExponentialEqualization::Filter(cv::Mat& src, cv::Mat& dst) {
-	std::vector<cv::Mat> planes;
-	cv::split(src, planes);
+	const int channels = src.channels();
+	const int histSize = 256;
 
+	int nRows = src.rows;
+	int nCols = src.cols;
+	cv::Mat res = cv::Mat(src.size(), src.type());
+	const uchar* srcData = src.data;
+	uchar* resData = res.data;
 
-	int histSize = 256;
+	std::vector<int*> hists;
+	for (int i = 0; i < channels; i++) {
+		int* hist = new int[histSize] { 0 };
+		hists.push_back(hist);
+	}
 
-	float range[] = { 0, 256 }; //the upper boundary is exclusive
-	const float* histRange = { range };
-
-	bool uniform = true, accumulate = false;
-
-	std::vector<cv::Mat> hists;
-	for (auto& plane : planes) {
-		hists.push_back(cv::Mat());
-
-		cv::calcHist(&plane, 1, 0, cv::Mat(), hists.back(), 1, &histSize, &histRange, uniform, accumulate);
+	for (int i = 0; i < channels; i++) {
+		int* hist = hists[i];
+		for (int j = 0; j < nRows * nCols; j++) {
+			hist[(int)srcData[i + j * channels]]++;
+		}
 	}
 
 	std::vector<uchar*> sums;
@@ -37,13 +41,13 @@ void FilterExponentialEqualization::Filter(cv::Mat& src, cv::Mat& dst) {
 		float sumaux[256] = { 0 };
 		uchar* sum = new uchar[256]{ 0 };
 
-		sumaux[0] = hist.at<float>(0);
+		sumaux[0] = hist[0];
 
 		float min = -1;
-		for (int i = 1; i < hist.rows * hist.cols; i++) {
+		for (int i = 1; i < histSize; i++) {
 			int b = i - 1;
-			float histVal = hist.at<float>(b);
-			sumaux[i] = sumaux[b] + hist.at<float>(i);
+			float histVal = hist[b];
+			sumaux[i] = sumaux[b] + hist[i];
 
 			if (histVal == 0)
 				continue;
@@ -54,7 +58,7 @@ void FilterExponentialEqualization::Filter(cv::Mat& src, cv::Mat& dst) {
 		float sumDelta = 1.f / _a;
 		float summax = sumaux[255];
 
-		for (int i = 0; i < hist.rows * hist.cols; i++) {
+		for (int i = 0; i < histSize; i++) {
 			float p = sumaux[i];
 			p /= summax; //CDF
 			p = p < 1 ? log(1 - p) : log(0.001);
@@ -65,19 +69,19 @@ void FilterExponentialEqualization::Filter(cv::Mat& src, cv::Mat& dst) {
 		sums.push_back(sum);
 	}
 
-	int i = 0;
-	for (auto& plane : planes) {
-		for (int j = 0; j < plane.rows * plane.cols; j++) {
-			uchar p = plane.at<uchar>(j);
-			plane.at<uchar>(j) = sums[i][(int)p];
+	for (int i = 0; i < channels; i++) {
+		for (int j = 0; j < nRows * nCols; j++) {
+			int idx = i + j * channels;
+			resData[idx] = sums[i][(int)srcData[idx]];
 		}
-		i++;
 	}
 
-	for (auto& sum : sums) {
-		delete sum;
+	for (int i = 0; i < channels; i++) {
+		delete[] sums[i];
+		delete[] hists[i];
 	}
 	sums.clear();
+	hists.clear();
 
-	cv::merge(planes, dst);
+	dst = res;
 }

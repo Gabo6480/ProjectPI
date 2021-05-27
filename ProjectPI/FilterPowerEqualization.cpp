@@ -17,30 +17,34 @@ float FilterPowerEqualization::getTwoValues(bool isC) {
 }
 
 void FilterPowerEqualization::Filter(cv::Mat& src, cv::Mat& dst) {
-	std::vector<cv::Mat> planes;
-	cv::split(src, planes);
+	const int channels = src.channels();
+	const int histSize = 256;
 
+	int nRows = src.rows;
+	int nCols = src.cols;
+	cv::Mat res = cv::Mat(src.size(), src.type());
+	const uchar* srcData = src.data;
+	uchar* resData = res.data;
 
-	int histSize = 256;
+	std::vector<int*> hists;
+	for (int i = 0; i < channels; i++) {
+		int* hist = new int[histSize] { 0 };
+		hists.push_back(hist);
+	}
 
-	float range[] = { 0, 256 }; //the upper boundary is exclusive
-	const float* histRange = { range };
-
-	bool uniform = true, accumulate = false;
-
-	std::vector<cv::Mat> hists;
-	for (auto& plane : planes) {
-		hists.push_back(cv::Mat());
-
-		cv::calcHist(&plane, 1, 0, cv::Mat(), hists.back(), 1, &histSize, &histRange, uniform, accumulate);
+	for (int i = 0; i < channels; i++) {
+		int* hist = hists[i];
+		for (int j = 0; j < nRows * nCols; j++) {
+			hist[(int)srcData[i + j * channels]]++;
+		}
 	}
 
 	std::vector<uchar*> sums;
 	for (auto& hist : hists) {
 		uchar* sum = new uchar[256]{ 0 };
 
-		for (int i = 0; i < hist.rows * hist.cols; i++) {
-			float p = hist.at<float>(i);
+		for (int i = 0; i < histSize; i++) {
+			float p = hist[i];
 			p = pow(p, _y) * _c;
 			sum[i] = cv::saturate_cast<uchar>(p);
 		}
@@ -48,19 +52,20 @@ void FilterPowerEqualization::Filter(cv::Mat& src, cv::Mat& dst) {
 		sums.push_back(sum);
 	}
 
-	int i = 0;
-	for (auto& plane : planes) {
-		for (int j = 0; j < plane.rows * plane.cols; j++) {
-			uchar p = plane.at<uchar>(j);
-			plane.at<uchar>(j) = sums[i][(int)p];
+
+	for (int i = 0; i < channels; i++) {
+		for (int j = 0; j < nRows * nCols; j++) {
+			int idx = i + j * channels;
+			resData[idx] = sums[i][(int)srcData[idx]];
 		}
-		i++;
 	}
 
-	for (auto& sum : sums) {
-		delete sum;
+	for (int i = 0; i < channels; i++) {
+		delete[] sums[i];
+		delete[] hists[i];
 	}
 	sums.clear();
+	hists.clear();
 
-	cv::merge(planes, dst);
+	dst = res;
 }

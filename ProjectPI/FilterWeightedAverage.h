@@ -5,7 +5,6 @@ class FilterWeightedAverage :
     public IFilter, public ISetValue
 {
     float _weight;
-    cv::Mat _kernel;
 public:
     FilterWeightedAverage(float weight = 2.0f);
 

@@ -4,13 +4,18 @@
 class FilterGaussian :
     public IFilter, public ISetValue
 {
-    cv::Size _ksize;
-    float _sigma = 0;
+    float _sigma = 8;
+    int* matrix = 0;
+    int _ksize = 0;
+    int sum = 0;
 public:
 
-    FilterGaussian(float sigma = 0, cv::Size ksize = cv::Size(3, 3));
+    FilterGaussian(float sigma = 8);
+    ~FilterGaussian();
 
     void Filter(cv::Mat& src, cv::Mat& dst);
+
+    void calcMatrix();
 
     void setValue(float sigma);
     float getValue();

@@ -1,12 +1,27 @@
 #include "FilterVerticalMirror.h"
 
 void FilterVerticalMirror::Filter(cv::Mat& src, cv::Mat& dst) {
-	cv::Mat aux;
-	cv::flip(src, aux, 1);
+	const int channels = src.channels();
 
-	aux = aux(cv::Rect(0, 0, aux.cols / 2, aux.rows));
+	int nRows = src.rows;
+	int nCols = src.cols;
+	int nColsHalve = nCols / 2;
+	cv::Mat res = cv::Mat(src.size(), src.type());
+	const uchar* srcData = src.data;
+	uchar* resData = res.data;
 
-	aux.copyTo(src(cv::Rect(0, 0, aux.cols, aux.rows)));
+	for (int i = 0; i < nRows; i++) {
+		for (int j = 0; j < nCols; j++) {
+			int curr = i * nCols + j;
+			int target = j < nColsHalve ? curr : i * nCols + nColsHalve + (nColsHalve - j);
 
-	dst = src;
+			for (int k = 0; k < channels; k++) {
+				int idx = k + curr * channels;
+				int idxT = k + target * channels;
+				resData[idx] = srcData[idxT];
+			}
+		}
+	}
+
+	dst = res;
 }
